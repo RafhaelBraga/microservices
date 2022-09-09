@@ -1,0 +1,57 @@
+{
+	"info": {
+		"_postman_id": "9fa9d46b-a3f2-4789-9697-ff225f0d892d",
+		"name": "MS-Pedido",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "14290613"
+	},
+	"item": [
+		{
+			"name": "postPedidos",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"itens\": [\r\n    {\r\n        \"quantidade\": 10,\r\n        \"descrição\": \"Coca-cola\"\r\n    },\r\n    {\r\n        \"quantidade\": 5,\r\n        \"descrição\": \"Mc Chicken\"\r\n    }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8082/pedidos-ms/pedidos",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"pedidos-ms",
+						"pedidos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getAllPedidos",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8082/pedidos-ms/pedidos",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"pedidos-ms",
+						"pedidos"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
