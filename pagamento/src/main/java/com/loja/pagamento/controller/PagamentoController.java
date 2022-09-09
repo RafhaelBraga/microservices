@@ -7,6 +7,7 @@ import io.github.resilience4j.retry.annotation.Retry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -20,6 +21,7 @@ import java.net.URI;
 
 @RestController
 @RequestMapping("/pagamentos")
+@EnableCaching
 public class PagamentoController {
 
     @Autowired
@@ -32,8 +34,10 @@ public class PagamentoController {
 
     @GetMapping("/{id}")
     @Retry(name = "RetornaItensPagamento", fallbackMethod = "ItensNaoRetornados")
+    @Cacheable("pagamento")
     public ResponseEntity<PagamentoDto> detalhar(@PathVariable @NotNull Long id) {
         PagamentoDto dto = pagamentoService.obterPorId(id);
+        System.out.println("cache");
 
         return ResponseEntity.ok(dto);
     }
@@ -47,12 +51,14 @@ public class PagamentoController {
     }
 
     @PutMapping("/{id}")
+    @CacheEvict(value = "pagamento", key = "#id")
     public ResponseEntity<PagamentoDto> atualizar(@PathVariable @NotNull Long id, @RequestBody @Valid PagamentoDto dto) {
         PagamentoDto atualizado = pagamentoService.atualizarPagamento(id, dto);
         return ResponseEntity.ok(atualizado);
     }
 
     @DeleteMapping("/{id}")
+    @CacheEvict(value = "pagamento", key = "#id")
     public ResponseEntity<PagamentoDto> remover(@PathVariable @NotNull Long id) {
         pagamentoService.excluirPagamento(id);
         return ResponseEntity.noContent().build();
@@ -60,15 +66,16 @@ public class PagamentoController {
 
     @PatchMapping("/{id}/confirmar")
     @CircuitBreaker(name = "atualizaPedido", fallbackMethod = "PagamentoEfetuadoAguardandoIntegracao")
+    @CacheEvict(value = "pagamento", key = "#id")
     public void confirmarPagamento(@PathVariable @NotNull Long id){
         pagamentoService.confirmarPagamento(id);
     }
-
+    
     public void PagamentoEfetuadoAguardandoIntegracao(Long id, Exception e){
         pagamentoService.alteraStatus(id);
     }
 
-    public ResponseEntity<PagamentoDto> ItensNaoRetornados(@PathVariable @NotNull Long id, Exception e) {
+    public ResponseEntity<PagamentoDto> ItensNaoRetornados(Long id, Exception e) {
         PagamentoDto dto = pagamentoService.obterPorIdSemItens(id);
 
         return ResponseEntity.ok(dto);
