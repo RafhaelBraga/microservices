@@ -34,7 +34,6 @@ public class PagamentoController {
     @Retry(name = "RetornaItensPagamento", fallbackMethod = "ItensNaoRetornados")
     public ResponseEntity<PagamentoDto> detalhar(@PathVariable @NotNull Long id) {
         PagamentoDto dto = pagamentoService.obterPorId(id);
-        System.out.println("cache");
 
         return ResponseEntity.ok(dto);
     }
