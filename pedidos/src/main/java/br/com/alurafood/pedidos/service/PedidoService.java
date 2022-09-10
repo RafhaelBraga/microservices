@@ -5,6 +5,7 @@ import br.com.alurafood.pedidos.dto.StatusDto;
 import br.com.alurafood.pedidos.model.Pedido;
 import br.com.alurafood.pedidos.model.Status;
 import br.com.alurafood.pedidos.repository.PedidoRepository;
+import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +33,17 @@ public class PedidoService {
                 .collect(Collectors.toList());
     }
 
+
+    // bulkhead do lado do serviço tolera instância super lotada
+    @Bulkhead(name = "pedidoService", fallbackMethod = "getDefault")
     public PedidoDto obterPorId(Long id) {
         Pedido pedido = repository.findById(id)
                 .orElseThrow(EntityNotFoundException::new);
-
         return modelMapper.map(pedido, PedidoDto.class);
+    }
+
+    public PedidoDto getDefault(Long id, Throwable throwable){
+        return null;
     }
 
     public PedidoDto criarPedido(PedidoDto dto) {

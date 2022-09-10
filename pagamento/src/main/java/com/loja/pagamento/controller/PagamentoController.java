@@ -70,7 +70,7 @@ public class PagamentoController {
     public void confirmarPagamento(@PathVariable @NotNull Long id){
         pagamentoService.confirmarPagamento(id);
     }
-    
+
     public void PagamentoEfetuadoAguardandoIntegracao(Long id, Exception e){
         pagamentoService.alteraStatus(id);
     }
